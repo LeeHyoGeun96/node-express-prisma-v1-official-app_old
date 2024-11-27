@@ -20,7 +20,9 @@
     "lint:check": "npx eslint src/**/*.ts",
     "lint:fix": "npx eslint --fix src/**/*.ts",
     "prepare": "husky install",
-    "build": "tsc --skipLibCheck"
+    "build": "tsc --skipLibCheck",
+    "migrate:reset": "prisma migrate reset --force",
+    "db:reset": "prisma db push --force-reset"
   },
   "keywords": [
     "node",
