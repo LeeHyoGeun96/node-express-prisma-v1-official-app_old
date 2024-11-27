@@ -6,5 +6,6 @@
 */
 -- AlterTable
 ALTER TABLE "Comment" DROP CONSTRAINT "Comment_pkey",
-ALTER COLUMN "id" SET DATA TYPE BIGSERIAL,
+ALTER COLUMN "id" SET DATA TYPE BIGINT,
+ALTER COLUMN "id" SET DEFAULT nextval('comment_id_seq'::regclass),
 ADD CONSTRAINT "Comment_pkey" PRIMARY KEY ("id");
