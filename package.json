@@ -20,8 +20,7 @@
     "lint:check": "npx eslint src/**/*.ts",
     "lint:fix": "npx eslint --fix src/**/*.ts",
     "prepare": "husky install",
-    "build": "tsc"
-    
+    "build": "tsc --skipLibCheck"
   },
   "keywords": [
     "node",
@@ -82,5 +81,4 @@
   "engines": {
     "node": ">=12.0.0"
   }
-  
 }
