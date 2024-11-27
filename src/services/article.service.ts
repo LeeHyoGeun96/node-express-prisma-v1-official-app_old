@@ -4,36 +4,21 @@ import HttpException from '../models/http-exception.model';
 import { findUserIdByUsername } from './auth.service';
 import profileMapper from '../utils/profile.utils';
 
-const buildFindAllQuery = (query: any, username: string | undefined) => {
+const buildFindAllQuery = (query: any) => {
   const queries: any = [];
-  const orAuthorQuery = [];
-  const andAuthorQuery = [];
 
-  if (username) {
-    orAuthorQuery.push({
-      username: {
-        equals: username,
-      },
-    });
-  }
-
+  // author 쿼리 조건이 있을 때만 추가
   if ('author' in query) {
-    andAuthorQuery.push({
-      username: {
-        equals: query.author,
+    queries.push({
+      author: {
+        username: {
+          equals: query.author,
+        },
       },
     });
   }
 
-  const authorQuery = {
-    author: {
-      OR: orAuthorQuery,
-      AND: andAuthorQuery,
-    },
-  };
-
-  queries.push(authorQuery);
-
+  // tag 쿼리 조건
   if ('tag' in query) {
     queries.push({
       tagList: {
@@ -44,6 +29,7 @@ const buildFindAllQuery = (query: any, username: string | undefined) => {
     });
   }
 
+  // favorited 쿼리 조건
   if ('favorited' in query) {
     queries.push({
       favoritedBy: {
@@ -56,11 +42,13 @@ const buildFindAllQuery = (query: any, username: string | undefined) => {
     });
   }
 
-  return queries;
+  // 쿼리 조건이 없으면 빈 배열 반환
+  return queries.length > 0 ? queries : [{}];
 };
 
 export const getArticles = async (query: any, username?: string) => {
-  const andQueries = buildFindAllQuery(query, username);
+  const andQueries = buildFindAllQuery(query);
+
   const articlesCount = await prisma.article.count({
     where: {
       AND: andQueries,
@@ -102,8 +90,8 @@ export const getArticles = async (query: any, username?: string) => {
       ...article,
       author: profileMapper(article.author, username),
       tagList: article.tagList.map(tag => tag.name),
-      favoritesCount: _count?.favoritedBy,
-      favorited: favoritedBy.some(item => item.username === username),
+      favoritesCount: _count?.favoritedBy || 0,
+      favorited: username ? favoritedBy.some(item => item.username === username) : false,
     })),
     articlesCount,
   };
