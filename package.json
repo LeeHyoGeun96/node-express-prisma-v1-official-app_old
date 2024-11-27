@@ -4,7 +4,7 @@
   "description": "Node.js, Express.js & Prisma RealWorld official app",
   "main": "index.js",
   "scripts": {
-    "postinstall": "tsc",
+    "postinstall": "npm run build",
     "test": "jest -i",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts dev",
     "start": "node dist/src/index.js",
@@ -19,7 +19,9 @@
     "prettier:check": "npx prettier --check .",
     "lint:check": "npx eslint src/**/*.ts",
     "lint:fix": "npx eslint --fix src/**/*.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "tsc"
+    
   },
   "keywords": [
     "node",
@@ -76,5 +78,9 @@
       "npm run prettier:write",
       "git add"
     ]
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
+  
 }
