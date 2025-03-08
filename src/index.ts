@@ -12,7 +12,15 @@ const app = express();
  * App Configuration
  */
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // 허용할 origin 설정 (환경변수에서 가져오거나 기본값 '*')
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // 자격 증명(쿠키 등) 허용
+  optionsSuccessStatus: 200, // IE11, 구형 브라우저 지원
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(routes);
