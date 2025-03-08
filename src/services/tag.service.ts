@@ -1,14 +1,14 @@
 import prisma from '../../prisma/prisma-client';
 
-const getTags = async (userId?: number): Promise<string[]> => {
-  if (userId) {
+const getTags = async (username?: string): Promise<string[]> => {
+  if (username) {
     // 1. 로그인한 사용자의 태그 (최대 3개)
     const userTags = await prisma.tag.findMany({
       where: {
         articles: {
           some: {
             author: {
-              id: userId,
+              username,
             },
           },
         },
