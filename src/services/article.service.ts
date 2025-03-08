@@ -1,8 +1,8 @@
-import slugify from 'slugify';
 import prisma from '../../prisma/prisma-client';
 import HttpException from '../models/http-exception.model';
 import { findUserIdByUsername } from './auth.service';
 import profileMapper from '../utils/profile.utils';
+import generateUniqueSlug from '../utils/generateUniqueSlug‎';
 
 const buildFindAllQuery = (query: any) => {
   const queries: any = [];
@@ -171,7 +171,7 @@ export const createArticle = async (article: any, username: string) => {
 
   const user = await findUserIdByUsername(username);
 
-  const slug = `${slugify(title)}-${user?.id}`;
+  const slug = generateUniqueSlug(title);
 
   const existingTitle = await prisma.article.findUnique({
     where: {
@@ -293,28 +293,6 @@ const disconnectArticlesTags = async (slug: string) => {
 };
 
 export const updateArticle = async (article: any, slug: string, username: string) => {
-  let newSlug = null;
-  const user = await findUserIdByUsername(username);
-
-  if (article.title) {
-    newSlug = `${slugify(article.title)}-${user?.id}`;
-
-    if (newSlug !== slug) {
-      const existingTitle = await prisma.article.findFirst({
-        where: {
-          slug: newSlug,
-        },
-        select: {
-          slug: true,
-        },
-      });
-
-      if (existingTitle) {
-        throw new HttpException(422, { errors: { title: ['must be unique'] } });
-      }
-    }
-  }
-
   const tagList = article.tagList?.length
     ? article.tagList.map((tag: string) => ({
         create: { name: tag },
@@ -332,7 +310,7 @@ export const updateArticle = async (article: any, slug: string, username: string
       ...(article.title ? { title: article.title } : {}),
       ...(article.body ? { body: article.body } : {}),
       ...(article.description ? { description: article.description } : {}),
-      ...(newSlug ? { slug: newSlug } : {}),
+      ...(slug ? { slug } : {}),
       updatedAt: new Date(),
       tagList: {
         connectOrCreate: tagList,
